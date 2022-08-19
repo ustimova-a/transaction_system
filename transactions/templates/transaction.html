@@ -1,0 +1,6 @@
+<form action="." method="POST">
+    {% csrf_token %}
+    {{ filter_form }}
+    <input type="submit" value="отправить">
+</form>
+{% if message %} <p>{{ message }}</p> {% endif %}
