@@ -1,0 +1,27 @@
+{% block title %} Регистрация {{ question.name }} {% endblock %}
+{% block content %}
+    <div class="container">
+        <div  class="mt-150">
+            <h1> Регистрация </h1>
+            <form method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                  <p>
+                    {{ field.label_tag }}<br>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small style="color: grey">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                      <p style="color: red">{{ error }}</p>
+                    {% endfor %}
+                  </p>
+                {% endfor %}
+            <br>
+                <input type="submit" value="зарегистрироваться" />
+            </form>
+            <br>
+            <p>Если вы уже зарегистрированы нажмите<a href="/login" target="blank"><strong>"войти"</strong></a>, чтобы перейти к вводу данных.</p>
+        </div>
+    </div>
+{% endblock %}

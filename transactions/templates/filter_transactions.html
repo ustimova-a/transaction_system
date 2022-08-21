@@ -1,0 +1,25 @@
+<form action="." method="GET">
+    {{ filter.form }}
+    <input type="submit" value="Поиск">
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>from_account</th>
+            <th>to_account</th>
+            <th>amount</th>
+            <th>date_time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in filter.qs %}
+            <tr>
+                <td>{{ x.from_account }}</td>
+                <td>{{ x.to_account }}</td>
+                <td>{{ x.amount }}</td>
+                <td>{{ x.date_time }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

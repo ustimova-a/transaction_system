@@ -21,7 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+# SECRET_KEY = ''
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -50,6 +51,24 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'handlers': {
+                'db_file': {
+                    'level': 'DEBUG',
+                    'class': 'logging.FileHandler',
+                    'filename': os.path.join(BASE_DIR, 'logs/db.log')
+                }
+            },
+            'loggers': {
+                'django.db.backends': {
+                    'handlers': ['db_file'],
+                    'level': 'DEBUG',
+                    'propagate': True
+                }
+            }
+}
 
 ROOT_URLCONF = 'core.urls'
 
