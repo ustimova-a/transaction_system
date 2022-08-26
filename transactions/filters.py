@@ -7,7 +7,7 @@ class TransactionFilter(FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.form.fields['from_account'].queryset = Account.objects.filter(user=self.request.user)
-        self.form.fields['to_account'].queryset = Account.objects.filter(user=self.request.user)
+        self.form.fields['to_account'].queryset = Account.objects.all()
     class Meta:
         model = Transaction
         fields = '__all__'

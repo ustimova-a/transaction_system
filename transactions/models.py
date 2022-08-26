@@ -1,10 +1,11 @@
 from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 
 
 class Account(models.Model):
-    balance = models.FloatField()
+    balance = models.FloatField(validators=[MinValueValidator(0)])
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     transactions = models.ManyToManyField('self', through='Transaction')
@@ -18,7 +19,7 @@ class Account(models.Model):
 
 
 class Transaction(models.Model):
-    amount = models.FloatField()
+    amount = models.FloatField(validators=[MinValueValidator(0)])
     date_time = models.DateTimeField(auto_now_add=True)
     from_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='outcomes')
     to_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='incomes')
