@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for x in filter.qs %}
+        {% for x in filter %}
             <tr>
                 <td>{{ x.from_account }}</td>
                 <td>{{ x.to_account }}</td>
@@ -23,3 +23,11 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% if filter.has_previous %}
+<a href="{% url 'filter_transactions' %}?page={{ filter.previous_page_number }}">Назад</a>
+{% endif %}
+
+{% if filter.has_next %}
+<a href="{% url 'filter_transactions' %}?page={{ filter.next_page_number }}">Вперед</a>
+{% endif %}

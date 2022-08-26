@@ -1,7 +1,7 @@
 from django_filters import FilterSet
 import django_filters
 from .models import Transaction, Account
-from .forms import TransactionFilterForm
+from .forms import TransactionFilterForm, AccountFilterForm
 
 class TransactionFilter(FilterSet):
     def __init__(self, *args, **kwargs):
@@ -15,6 +15,10 @@ class TransactionFilter(FilterSet):
 
 
 class AccountFilter(FilterSet):
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.form.fields['id'].queryset = Account.objects.filter(user=self.request.user)
     class Meta:
         model = Account
         fields = ['id']
+        # form = AccountFilterForm

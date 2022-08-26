@@ -2,9 +2,11 @@ from email import message
 from django.shortcuts import render
 from django.db.models import F
 from django.contrib.auth.forms import UserCreationForm
+from django.core.paginator import Paginator, EmptyPage
+from django.views.generic import ListView
 
 from .models import Account, Transaction
-from .forms import TransactionForm, TransactionFilterForm
+from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm
 from .filters import TransactionFilter, AccountFilter
 
 def transaction(request):
@@ -43,14 +45,26 @@ def transaction(request):
     return render(request, 'transaction.html', {'filter_form': form, 'message': message})
 
 
+def paginate(request, objects):
+    paginator = Paginator(objects, 5)
+    page_num = request.GET.get('page', 1)
+    try:
+        page = paginator.page(page_num)
+    except EmptyPage:
+        page = paginator.page(1)
+    return page    
+
+
 def filter_transactions(request):
-    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
-    return render(request, 'filter_transactions.html', {'filter': filter})
+    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request).qs
+    paginated_qs = paginate(request, filter)
+    return render(request, 'filter_transactions.html', {'filter': paginated_qs})
 
 
 def account(request):
-    filter = AccountFilter(request.GET, queryset=Account.objects.all())
-    return render(request, 'account.html', {'filter': filter})
+    filter = AccountFilter(request.GET, queryset=Account.objects.all(), request=request) #qs
+    # paginated_qs = paginate(request, filter)
+    return render(request, 'account.html', {'filter': filter}) # paginated_qs
 
 
 def register(request):

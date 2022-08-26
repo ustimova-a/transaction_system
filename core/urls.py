@@ -20,8 +20,7 @@ from transactions import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.transaction, name='transaction'),
-    path('filter/', views.filter_transactions, name='filter_transactions'),
-    path('account/', views.account, name='account'),
+    path('transactions/', include('transactions.urls')),
     path('', include('django.contrib.auth.urls')),
     path('registration/', views.register, name='registration'),
 ]

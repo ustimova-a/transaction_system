@@ -25,3 +25,11 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% if filter.has_previous %}
+<a href="{% url 'account' %}?page={{ filter.previous_page_number }}">Назад</a>
+{% endif %}
+
+{% if filter.has_next %}
+<a href="{% url 'account' %}?page={{ filter.next_page_number }}">Вперед</a>
+{% endif %}
