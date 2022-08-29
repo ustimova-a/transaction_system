@@ -45,9 +45,9 @@ def transaction(request):
     return render(request, 'transaction.html', {'filter_form': form, 'message': message})
 
 
-def paginate(request, objects):
+def paginate(request, objects, url_param):
     paginator = Paginator(objects, 5)
-    page_num = request.GET.get('page', 1)
+    page_num = request.GET.get(url_param, 1)
     try:
         page = paginator.page(page_num)
     except EmptyPage:
@@ -56,15 +56,25 @@ def paginate(request, objects):
 
 
 def filter_transactions(request):
-    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request).qs
-    paginated_qs = paginate(request, filter)
-    return render(request, 'filter_transactions.html', {'filter': paginated_qs})
+    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
+    filter_form = filter.form
+    paginated_qs = paginate(request, filter.qs, 'page')
+    return render(request, 'filter_transactions.html', {'filter': paginated_qs, 'filter_form': filter_form})
 
 
-def account(request):
-    filter = AccountFilter(request.GET, queryset=Account.objects.all(), request=request) #qs
-    # paginated_qs = paginate(request, filter)
-    return render(request, 'account.html', {'filter': filter}) # paginated_qs
+def account(request, account_id):
+    account = Account.objects.get(id=account_id)
+    outcomes = account.outcomes.order_by('-date_time')
+    paginated_outcomes = paginate(request, outcomes, 'outcomes_page')
+    incomes = account.incomes.order_by('-date_time')
+    paginated_incomes = paginate(request, incomes, 'incomes_page')
+    return render (request, 'account.html', {'account': account, 'outcomes': paginated_outcomes, 'incomes': paginated_incomes})
+
+
+# def account(request):
+#     filter = AccountFilter(request.GET, queryset=Account.objects.all(), request=request) #qs
+#     # paginated_qs = paginate(request, filter)
+#     return render(request, 'account.html', {'filter': filter}) # paginated_qs
 
 
 def register(request):
