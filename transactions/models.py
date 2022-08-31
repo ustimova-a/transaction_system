@@ -23,6 +23,7 @@ class Transaction(models.Model):
     date_time = models.DateTimeField(auto_now_add=True)
     from_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='outcomes')
     to_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='incomes')
+    is_cancelled = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Транзакция'

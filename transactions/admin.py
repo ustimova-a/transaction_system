@@ -22,7 +22,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'amount', 'date_time', 'from_account', 'to_account')
+    list_display = ('id', 'amount', 'date_time', 'from_account', 'to_account', 'is_cancelled')
 
 
 admin.site.register(Account, AccountAdmin)

@@ -1,10 +1,15 @@
+<form action="." method="POST">
+    {% csrf_token %}
+
 <h1># {{ account.id }}</h1>
 <p>Date created: {{ account.created }}</p>
 <p>Balance: {{ account.balance }}</p>
 <h2>Outcomes</h2>
+<p>Total: {{ total_outcomes }}</p>
 <table class="table">
     <thead>
         <tr>
+            <th>id</th>
             <th>to account</th>
             <th>datetime</th>
             <th>amount</th>
@@ -13,13 +18,19 @@
     <tbody>
         {% for x in outcomes %}
             <tr>
+                <td>{{ x.id }}</td>
                 <td>{{ x.to_account }}</td>
                 <td>{{ x.date_time }}</td>
                 <td>{{ x.amount }}</td>
+                <td>{{ form }} 
+                    <!-- {% if message %} <p>{{ message }}</p> {% endif %} -->
+                </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+<input type="submit" value="submit">
+</form>
 {% if outcomes.has_previous %}
 <a href="{% url 'account' account.id %}?outcomes_page={{ outcomes.previous_page_number }}&incomes_page={{ incomes.number }}">Назад</a>
 {% endif %}
@@ -29,6 +40,7 @@
 {% endif %}
 
 <h2>Incomes</h2>
+<p>Total: {{ total_incomes }}</p>
 <table class="table">
     <thead>
         <tr>

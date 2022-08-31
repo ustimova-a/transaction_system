@@ -1,12 +1,12 @@
 from email import message
 from django.shortcuts import render
-from django.db.models import F
+from django.db.models import F, Sum
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, EmptyPage
 from django.views.generic import ListView
 
 from .models import Account, Transaction
-from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm
+from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, CancelForm
 from .filters import TransactionFilter, AccountFilter
 
 def transaction(request):
@@ -62,20 +62,37 @@ def filter_transactions(request):
     return render(request, 'filter_transactions.html', {'filter': paginated_qs, 'filter_form': filter_form})
 
 
+def cancel_transaction(request, account):
+    # message = ''
+    if request.method == 'POST':
+        form = CancelForm(request.POST)
+        if form.is_valid():
+            # to_account = Transaction.to_account
+            amount = 1
+            is_cancelled = form.cleaned_data.get('is_cancelled')
+            # print(is_cancelled)
+            if is_cancelled:
+                # to_account.balance -= amount
+                # to_account.save()
+                account.balance += amount
+                account.save()
+                # message = 'Cancelled'
+    else:
+        form = CancelForm()
+        return render(request, 'cancel.html', {'form': form})   #'message': message 
+
+
 def account(request, account_id):
     account = Account.objects.get(id=account_id)
     outcomes = account.outcomes.order_by('-date_time')
+    total_outcomes = outcomes.aggregate(Sum('amount'))['amount__sum']
     paginated_outcomes = paginate(request, outcomes, 'outcomes_page')
     incomes = account.incomes.order_by('-date_time')
+    total_incomes = incomes.aggregate(Sum('amount'))['amount__sum']
     paginated_incomes = paginate(request, incomes, 'incomes_page')
-    return render (request, 'account.html', {'account': account, 'outcomes': paginated_outcomes, 'incomes': paginated_incomes})
-
-
-# def account(request):
-#     filter = AccountFilter(request.GET, queryset=Account.objects.all(), request=request) #qs
-#     # paginated_qs = paginate(request, filter)
-#     return render(request, 'account.html', {'filter': filter}) # paginated_qs
-
+    cancel_transaction(request, account) #???
+    return render (request, 'account.html', {'account': account, 'outcomes': paginated_outcomes, 'total_outcomes': total_outcomes, 'incomes': paginated_incomes, 'total_incomes': total_incomes, 'form': form, 'message': message})
+    
 
 def register(request):
     if request.method == 'POST':
