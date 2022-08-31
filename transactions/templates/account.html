@@ -23,7 +23,7 @@
                 <td>{{ x.date_time }}</td>
                 <td>{{ x.amount }}</td>
                 <td>{{ form }} 
-                    <!-- {% if message %} <p>{{ message }}</p> {% endif %} -->
+                    {% if message %} <p>{{ message }}</p> {% endif %}
                 </td>
             </tr>
         {% endfor %}
