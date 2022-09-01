@@ -19,15 +19,17 @@ class Account(models.Model):
 
 
 class Transaction(models.Model):
-    amount = models.FloatField(validators=[MinValueValidator(0)])
     date_time = models.DateTimeField(auto_now_add=True)
-    from_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='outcomes')
+    amount = models.FloatField(validators=[MinValueValidator(0)])
+    from_accounts = models.ManyToManyField(Account, related_name='outcomes')
     to_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='incomes')
     is_cancelled = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+
+
 
 
 

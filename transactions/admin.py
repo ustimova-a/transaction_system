@@ -10,8 +10,8 @@ class TransactionIncomeInline(admin.TabularInline):
 
 
 class TransactionOutcomeInline(admin.TabularInline):
-    model = Account.transactions.through
-    fk_name = 'from_account'
+    model = Transaction.from_accounts.through
+    # fk_name = 'from_accounts'
     verbose_name_plural = 'Расходы'
     extra = 0
 
@@ -22,8 +22,10 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'amount', 'date_time', 'from_account', 'to_account', 'is_cancelled')
-
+    list_display = ('id', 'amount', 'from_accounts_list', 'to_account', 'is_cancelled')
+    def from_accounts_list(self, transaction):
+        return ', '.join(transaction.from_accounts.values_list('id', flat=True))
+    
 
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Transaction, TransactionAdmin)

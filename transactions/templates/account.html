@@ -15,12 +15,13 @@
     <tbody>
             {% for x in outcomes %}
             <form action="{% url 'cancel_transaction' %}" method="POST">
+                <input type="hidden" name="id" value="{{ x.id }}">
                 {% csrf_token %}
                 <tr>
-                    <td><input type="text" name="id" value="{{ x.id }}"></td>
-                    <td><input type="text" name="to_account" value="{{ x.to_account }}"></td>
+                    <td>{{ x.id }}</td>
+                    <td>{{ x.to_account }}</td>
                     <td>{{ x.date_time }}</td>
-                    <td><input type="text" name="amount" value="{{ x.amount }}"></td>
+                    <td>{{ x.outcome_amount }}</td>
                     <td><input type="submit" value="cancel"></td>
                 </tr>
             </form>

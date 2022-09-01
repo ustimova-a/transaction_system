@@ -1,6 +1,6 @@
 from email import message
 from django.shortcuts import render
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Count
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, EmptyPage
 from django.views.generic import ListView
@@ -36,10 +36,12 @@ def transaction(request):
                 to_account.save()
                 # for account in from_accounts:
                 #     Transaction.objects.create(from_account=account, to_account=to_account, amount=amount/accounts_count)
-                transaction_list = []
-                for account in from_accounts:
-                    transaction_list.append(Transaction(from_account=account, to_account=to_account, amount=amount/accounts_count))
-                Transaction.objects.bulk_create(transaction_list)
+                # transaction_list = []
+                # for account in from_accounts:
+                #     transaction_list.append(Transaction(from_account=account, to_account=to_account, amount=amount/accounts_count))
+                # Transaction.objects.bulk_create(transaction_list)
+                transaction = Transaction.objects.create(to_account=to_account, amount=amount)
+                transaction.from_accounts.add(*from_accounts)
                 message = 'Successful transaction.'
     else:
         form = TransactionForm(request.user)
@@ -65,8 +67,8 @@ def filter_transactions(request):
 
 def account(request, account_id):
     account = Account.objects.get(id=account_id)
-    outcomes = account.outcomes.order_by('-date_time')
-    total_outcomes = outcomes.aggregate(Sum('amount'))['amount__sum']
+    outcomes = account.outcomes.annotate(outcome_amount=Count('from_accounts__id')).order_by('-date_time')
+    total_outcomes = outcomes.aggregate(Sum('outcome_amount'))['outcome_amount__sum']
     paginated_outcomes = paginate(request, outcomes, 'outcomes_page')
     incomes = account.incomes.order_by('-date_time')
     total_incomes = incomes.aggregate(Sum('amount'))['amount__sum']
@@ -77,25 +79,17 @@ def account(request, account_id):
 def cancel_transaction(request):
     message = ''
     if request.method == 'POST':
-        # if 'id' in request.POST and request.POST['id']:
-            id = request.POST.get('id')
-            transaction = Transaction.objects.get(id=id)
-            # # to_account = transaction.to_account
-            # from_account = transaction.from_account
-            # amount = transaction.amount
-            # is_cancelled = transaction.is_cancelled
-            if not transaction.is_cancelled:
-                transaction.to_account.balance -= transaction.amount
-                transaction.to_account.save()
-                transaction.from_account.balance += transaction.amount
-                transaction.from_account.save()
-                transaction.is_cancelled = True
-                transaction.save()
-                message = f'Transaction No.{transaction.id} has been cancelled.'
-            else:
-                message = 'Already cancelled.'
-        # else:
-        #     message = 'Something went wrong.'
+        id = request.POST.get('id')
+        transaction = Transaction.objects.get(id=id)
+        if not transaction.is_cancelled:
+            transaction.to_account.balance -= transaction.amount
+            transaction.to_account.save()
+            transaction.from_accounts.update(balance=F('balance') - transaction.amount/transaction.from_accounts.count())
+            transaction.is_cancelled = True
+            transaction.save()
+            message = f'Transaction No.{transaction.id} has been cancelled.'
+        else:
+            message = 'Already cancelled.'
     return render(request, 'cancel.html', {'message': message }) #redirect
 
 

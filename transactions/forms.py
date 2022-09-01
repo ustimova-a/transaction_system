@@ -19,7 +19,7 @@ class TransactionFilterForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ('to_account', 'amount', 'from_account')
+        fields = ('to_account', 'amount', 'from_accounts')
 
 
 class AccountFilterForm(forms.ModelForm):
