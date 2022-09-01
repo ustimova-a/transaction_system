@@ -14,11 +14,19 @@ class TransactionFilter(FilterSet):
         form = TransactionFilterForm
 
 
-class AccountFilter(FilterSet):
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.form.fields['id'].queryset = Account.objects.filter(user=self.request.user)
-    class Meta:
-        model = Account
-        fields = ['id']
-        # form = AccountFilterForm
+# class AccountFilter(FilterSet):
+#     # def __init__(self, *args, **kwargs):
+#     #     super().__init__(*args, **kwargs)
+#     #     self.form.fields['id'].queryset = Account.objects.filter(user=self.request.user)
+#     class Meta:
+#         model = Account
+#         fields = ['id']
+#         # form = AccountFilterForm
+
+
+# class CancelFilter(FilterSet):
+    
+
+#     class Meta:
+#         model = Transaction
+#         fields = 

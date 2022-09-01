@@ -1,6 +1,3 @@
-<form action="." method="POST">
-    {% csrf_token %}
-
 <h1># {{ account.id }}</h1>
 <p>Date created: {{ account.created }}</p>
 <p>Balance: {{ account.balance }}</p>
@@ -16,21 +13,20 @@
         </tr>
     </thead>
     <tbody>
-        {% for x in outcomes %}
-            <tr>
-                <td>{{ x.id }}</td>
-                <td>{{ x.to_account }}</td>
-                <td>{{ x.date_time }}</td>
-                <td>{{ x.amount }}</td>
-                <td>{{ form }} 
-                    {% if message %} <p>{{ message }}</p> {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
+            {% for x in outcomes %}
+            <form action="{% url 'cancel_transaction' %}" method="POST">
+                {% csrf_token %}
+                <tr>
+                    <td><input type="text" name="id" value="{{ x.id }}"></td>
+                    <td><input type="text" name="to_account" value="{{ x.to_account }}"></td>
+                    <td>{{ x.date_time }}</td>
+                    <td><input type="text" name="amount" value="{{ x.amount }}"></td>
+                    <td><input type="submit" value="cancel"></td>
+                </tr>
+            </form>
+            {% endfor %}
     </tbody>
 </table>
-<input type="submit" value="submit">
-</form>
 {% if outcomes.has_previous %}
 <a href="{% url 'account' account.id %}?outcomes_page={{ outcomes.previous_page_number }}&incomes_page={{ incomes.number }}">Назад</a>
 {% endif %}

@@ -33,9 +33,8 @@ class AccountFilterForm(forms.ModelForm):
         fields = ('user', 'id')
 
 
-class CancelForm(forms.ModelForm):
-    is_cancelled = forms.BooleanField(required=False)
-
+class OutcomeForm(forms.ModelForm):
+    
     class Meta:
         model = Transaction
-        fields = ('is_cancelled',)
+        fields = ('id', 'to_account', 'amount')
