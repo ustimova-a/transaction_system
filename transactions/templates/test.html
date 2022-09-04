@@ -1,0 +1,17 @@
+{% for account in account_list %}
+    <p>{{ account.id }}</p>
+    <p>Outcomes</p> 
+    <ul>
+        {% for outcome in account.outcomes.all %}
+            <li>{{ outcome.id }} - {{ outcome.outcome_amount }}</li>
+        {% endfor %}
+    </ul>
+{% endfor %}
+{% comment %} {% for transaction in transaction_list %}
+    <p>{{ transaction.id }} - {{ transaction.to_account.id }}</p>
+    <ul>
+    {% for account in transaction.from_accounts.all %}
+        <li>{{ account.id }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %} {% endcomment %}

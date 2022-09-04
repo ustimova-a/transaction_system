@@ -1,6 +1,6 @@
 from email import message
 from django.shortcuts import render
-from django.db.models import F, Sum, Count
+from django.db.models import F, Sum, Count, Prefetch
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, EmptyPage
 from django.views.generic import ListView
@@ -66,8 +66,8 @@ def filter_transactions(request):
 
 
 def account(request, account_id):
-    account = Account.objects.get(id=account_id)
-    outcomes = account.outcomes.annotate(outcome_amount=Count('from_accounts__id')).order_by('-date_time')
+    account = Account.objects.prefetch_related(Prefetch('outcomes', Transaction.objects.annotate(outcome_amount=F('amount') / Count('from_accounts')))).get(id=account_id)
+    outcomes = account.outcomes.order_by('-date_time')
     total_outcomes = outcomes.aggregate(Sum('outcome_amount'))['outcome_amount__sum']
     paginated_outcomes = paginate(request, outcomes, 'outcomes_page')
     incomes = account.incomes.order_by('-date_time')
@@ -101,3 +101,11 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/registration.html', {'form': form})
+
+
+def test(request):
+    account_list = Account.objects.prefetch_related(Prefetch('outcomes', Transaction.objects.annotate(outcome_amount=F('amount') / Count('from_accounts')))).all()
+    # transaction_list = Transaction.objects.select_related('to_account')\
+    #                                         .prefetch_related(Prefetch('from_accounts', Account.objects.filter(balance__gte=1000)))\
+    #                                         .all()
+    return render(request, 'test.html', {'account_list': account_list})
