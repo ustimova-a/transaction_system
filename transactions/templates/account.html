@@ -41,7 +41,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>from account</th>
+            <th>from accounts</th>
             <th>datetime</th>
             <th>amount</th>
         </tr>
@@ -49,7 +49,7 @@
     <tbody>
         {% for x in incomes %}
             <tr>
-                <td>{{ x.from_account }}</td>
+                <td>{{ x.from_accounts.all|join:', ' }}</td>
                 <td>{{ x.date_time }}</td>
                 <td>{{ x.amount }}</td>
             </tr>

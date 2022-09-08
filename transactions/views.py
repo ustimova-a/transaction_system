@@ -10,42 +10,54 @@ from .models import Account, Transaction
 from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, OutcomeForm
 from .filters import TransactionFilter
 
+
+def create_transaction(transaction_user, transaction_data):
+    form = TransactionForm(transaction_user, transaction_data)
+
+    if not form.is_valid():
+        return form, 'Invalid data for transaction.'
+
+    from_accounts = form.cleaned_data.get('from_accounts')
+    # print(from_accounts.query)
+    to_account = form.cleaned_data.get('to_account')
+    amount = form.cleaned_data.get('amount')
+    accounts_count = from_accounts.count()
+    # for account in from_accounts:
+    #     if account.balance < amount/accounts_count:
+    #         form.add_error('from_accounts', f'Account {account.id} does not have sufficient funds.')
+    #         break
+    # print(from_accounts.filter(balance__gte=amount/accounts_count).query)
+    if from_accounts.filter(balance__gte=amount/accounts_count).count() < accounts_count:
+        form.add_error('from_accounts', f'Account {Account.id} does not have sufficient funds.')
+    else:
+        # for account in from_accounts:
+        #     account.balance -= amount/accounts_count
+        #     account.save()
+        from_accounts.update(balance=F('balance') - amount/accounts_count)
+        to_account.balance += amount
+        to_account.save()
+        # for account in from_accounts:
+        #     Transaction.objects.create(from_account=account, to_account=to_account, amount=amount/accounts_count)
+        # transaction_list = []
+        # for account in from_accounts:
+        #     transaction_list.append(Transaction(from_account=account, to_account=to_account, amount=amount/accounts_count))
+        # Transaction.objects.bulk_create(transaction_list)
+        transaction = Transaction.objects.create(to_account=to_account, amount=amount)
+        transaction.from_accounts.add(*from_accounts)
+        message = 'Successful transaction.'
+    return form, message
+
+
 def transaction(request):
-    message = ''
     if request.method == 'POST':
-        form = TransactionForm(request.user, request.POST)
-        if form.is_valid():
-            from_accounts = form.cleaned_data.get('from_accounts')
-            # print(from_accounts.query)
-            to_account = form.cleaned_data.get('to_account')
-            amount = form.cleaned_data.get('amount')
-            accounts_count = from_accounts.count()
-            # for account in from_accounts:
-            #     if account.balance < amount/accounts_count:
-            #         form.add_error('from_accounts', f'Account {account.id} does not have sufficient funds.')
-            #         break
-            # print(from_accounts.filter(balance__gte=amount/accounts_count).query)
-            if from_accounts.filter(balance__gte=amount/accounts_count).count() < accounts_count:
-                form.add_error('from_accounts', f'Account {Account.id} does not have sufficient funds.')
-            else:
-                # for account in from_accounts:
-                #     account.balance -= amount/accounts_count
-                #     account.save()
-                from_accounts.update(balance=F('balance') - amount/accounts_count)
-                to_account.balance += amount
-                to_account.save()
-                # for account in from_accounts:
-                #     Transaction.objects.create(from_account=account, to_account=to_account, amount=amount/accounts_count)
-                # transaction_list = []
-                # for account in from_accounts:
-                #     transaction_list.append(Transaction(from_account=account, to_account=to_account, amount=amount/accounts_count))
-                # Transaction.objects.bulk_create(transaction_list)
-                transaction = Transaction.objects.create(to_account=to_account, amount=amount)
-                transaction.from_accounts.add(*from_accounts)
-                message = 'Successful transaction.'
+        form, message = create_transaction(request.user, request.POST)
     else:
         form = TransactionForm(request.user)
-    return render(request, 'transaction.html', {'filter_form': form, 'message': message})
+        message = ''
+    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
+    filter_form = filter.form
+    paginated_qs = paginate(request, filter.qs, 'page')
+    return render(request, 'transaction.html', {'add_transaction_form': form, 'message': message, 'filter': paginated_qs, 'filter_form': filter_form})
 
 
 def paginate(request, objects, url_param):
@@ -58,14 +70,9 @@ def paginate(request, objects, url_param):
     return page    
 
 
-def filter_transactions(request):
-    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
-    filter_form = filter.form
-    paginated_qs = paginate(request, filter.qs, 'page')
-    return render(request, 'filter_transactions.html', {'filter': paginated_qs, 'filter_form': filter_form})
-
-
 def account(request, account_id):
+    if not request.user.account_set.filter(id=account_id).exists():
+        return render(request, 'cancel.html', {'message': 'Access denied.' })
     account = Account.objects.prefetch_related(Prefetch('outcomes', Transaction.objects.annotate(outcome_amount=F('amount') / Count('from_accounts')))).get(id=account_id)
     outcomes = account.outcomes.order_by('-date_time')
     total_outcomes = outcomes.aggregate(Sum('outcome_amount'))['outcome_amount__sum']
@@ -73,7 +80,7 @@ def account(request, account_id):
     incomes = account.incomes.order_by('-date_time')
     total_incomes = incomes.aggregate(Sum('amount'))['amount__sum']
     paginated_incomes = paginate(request, incomes, 'incomes_page')
-    return render (request, 'account.html', {'account': account, 'outcomes': paginated_outcomes, 'total_outcomes': total_outcomes, 'incomes': paginated_incomes, 'total_incomes': total_incomes})
+    return render(request, 'account.html', {'account': account, 'outcomes': paginated_outcomes, 'total_outcomes': total_outcomes, 'incomes': paginated_incomes, 'total_incomes': total_incomes})
 
 
 def cancel_transaction(request):
@@ -81,16 +88,19 @@ def cancel_transaction(request):
     if request.method == 'POST':
         id = request.POST.get('id')
         transaction = Transaction.objects.get(id=id)
-        if not transaction.is_cancelled:
-            transaction.to_account.balance -= transaction.amount
-            transaction.to_account.save()
-            transaction.from_accounts.update(balance=F('balance') - transaction.amount/transaction.from_accounts.count())
-            transaction.is_cancelled = True
-            transaction.save()
-            message = f'Transaction No.{transaction.id} has been cancelled.'
+        if transaction.from_accounts.first().user != request.user:
+            message = 'Access denied.'
         else:
-            message = 'Already cancelled.'
-    return render(request, 'cancel.html', {'message': message }) #redirect
+            if not transaction.is_cancelled:
+                transaction.to_account.balance -= transaction.amount
+                transaction.to_account.save()
+                transaction.from_accounts.update(balance=F('balance') - transaction.amount/transaction.from_accounts.count())
+                transaction.is_cancelled = True
+                transaction.save()
+                message = f'Transaction No.{transaction.id} has been cancelled.'
+            else:
+                message = 'Already cancelled.'
+    return render(request, 'cancel.html', {'message': message })
 
 
 def register(request):

@@ -6,11 +6,11 @@ from .forms import TransactionFilterForm, AccountFilterForm
 class TransactionFilter(FilterSet):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.form.fields['from_account'].queryset = Account.objects.filter(user=self.request.user)
+        self.form.fields['from_accounts'].queryset = Account.objects.filter(user=self.request.user)
         self.form.fields['to_account'].queryset = Account.objects.all()
     class Meta:
         model = Transaction
-        fields = '__all__'
+        fields = ('to_account', 'amount', 'from_accounts', 'date_time')
         form = TransactionFilterForm
 
 

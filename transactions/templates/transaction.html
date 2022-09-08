@@ -1,6 +1,45 @@
 <form action="." method="POST">
     {% csrf_token %}
-    {{ filter_form }}
+    {{ add_transaction_form }}
     <input type="submit" value="отправить">
 </form>
 {% if message %} <p>{{ message }}</p> {% endif %}
+
+<form action="." method="GET">
+    {{ filter_form }}
+    <input type="submit" value="Поиск">
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>from_account</th>
+            <th>to_account</th>
+            <th>amount</th>
+            <th>date_time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for x in filter %}
+            <tr>
+                <td>{{ x.from_accounts.all|join:', ' }}</td>
+                <td>{{ x.to_account }}</td>
+                <td>{{ x.amount }}</td>
+                <td>{{ x.date_time }}</td>
+                <td><form action="{% url 'cancel_transaction' %}" method="POST">
+                    <input type="hidden" name="id" value="{{ x.id }}">
+                    {% csrf_token %}
+                        <input type="submit" value="cancel"></td>
+                </form>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if filter.has_previous %}
+<a href="{% url 'transaction' %}?page={{ filter.previous_page_number }}">Назад</a>
+{% endif %}
+
+{% if filter.has_next %}
+<a href="{% url 'transaction' %}?page={{ filter.next_page_number }}">Вперед</a>
+{% endif %}

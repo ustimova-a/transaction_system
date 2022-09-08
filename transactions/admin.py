@@ -24,7 +24,7 @@ class AccountAdmin(admin.ModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
     list_display = ('id', 'amount', 'from_accounts_list', 'to_account', 'is_cancelled')
     def from_accounts_list(self, transaction):
-        return ', '.join(transaction.from_accounts.values_list('id', flat=True))
+        return ', '.join(map(str, transaction.from_accounts.values_list('id', flat=True)))
     
 
 admin.site.register(Account, AccountAdmin)

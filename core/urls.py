@@ -19,7 +19,7 @@ from transactions import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('transactions/', include('transactions.urls')),
+    path('', include('transactions.urls')),
     path('', include('django.contrib.auth.urls')),
     path('registration/', views.register, name='registration'),
 ]
