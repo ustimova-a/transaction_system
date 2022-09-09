@@ -2,6 +2,7 @@ from tkinter import CASCADE
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
+from django.db.models import F
 
 
 class Account(models.Model):
@@ -28,6 +29,32 @@ class Transaction(models.Model):
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
+
+    @staticmethod
+    def create_transaction(to_account, from_accounts, amount):
+        accounts_count = from_accounts.count()
+        # for account in from_accounts:
+        #     if account.balance < amount/accounts_count:
+        #         form.add_error('from_accounts', f'Account {account.id} does not have sufficient funds.')
+        #         break
+        # print(from_accounts.filter(balance__gte=amount/accounts_count).query)
+        sufficient_accounts = from_accounts.filter(balance__gte=amount/accounts_count)
+        if sufficient_accounts.count() < accounts_count:
+            insufficient_accounts = set(from_accounts.values_list('id', flat=True)) - set(sufficient_accounts.values_list('id', flat=True))
+            raise ValueError(f'Accounts {",".join(map(str,insufficient_accounts))} do not have sufficient funds.')
+        from_accounts.update(balance=F('balance') - amount/accounts_count)
+        to_account.balance += amount
+        to_account.save()
+        # for account in from_accounts:
+        #     Transaction.objects.create(from_account=account, to_account=to_account, amount=amount/accounts_count)
+        # transaction_list = []
+        # for account in from_accounts:
+        #     transaction_list.append(Transaction(from_account=account, to_account=to_account, amount=amount/accounts_count))
+        # Transaction.objects.bulk_create(transaction_list)
+        transaction = Transaction.objects.create(to_account=to_account, amount=amount)
+        transaction.from_accounts.add(*from_accounts)
+        return transaction
+
 
 
 

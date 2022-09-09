@@ -21,30 +21,16 @@ def create_transaction(transaction_user, transaction_data):
     # print(from_accounts.query)
     to_account = form.cleaned_data.get('to_account')
     amount = form.cleaned_data.get('amount')
-    accounts_count = from_accounts.count()
-    # for account in from_accounts:
-    #     if account.balance < amount/accounts_count:
-    #         form.add_error('from_accounts', f'Account {account.id} does not have sufficient funds.')
-    #         break
-    # print(from_accounts.filter(balance__gte=amount/accounts_count).query)
-    if from_accounts.filter(balance__gte=amount/accounts_count).count() < accounts_count:
-        form.add_error('from_accounts', f'Account {Account.id} does not have sufficient funds.')
-    else:
+    try:
+        Transaction.create_transaction(to_account, from_accounts, amount)
+        message = 'Successful transaction.'
+    except ValueError as error:
+        form.add_error('from_accounts', error)
+        message = ''
         # for account in from_accounts:
         #     account.balance -= amount/accounts_count
         #     account.save()
-        from_accounts.update(balance=F('balance') - amount/accounts_count)
-        to_account.balance += amount
-        to_account.save()
-        # for account in from_accounts:
-        #     Transaction.objects.create(from_account=account, to_account=to_account, amount=amount/accounts_count)
-        # transaction_list = []
-        # for account in from_accounts:
-        #     transaction_list.append(Transaction(from_account=account, to_account=to_account, amount=amount/accounts_count))
-        # Transaction.objects.bulk_create(transaction_list)
-        transaction = Transaction.objects.create(to_account=to_account, amount=amount)
-        transaction.from_accounts.add(*from_accounts)
-        message = 'Successful transaction.'
+        
     return form, message
 
 
@@ -57,13 +43,8 @@ def transaction(request):
     filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
     filter_form = filter.form
     paginated_qs = paginate(request, filter.qs, 'page')
-
-    owned_by_user = False
-    for transaction in filter.qs:
-        if transaction.from_accounts.first().user or transaction.to_account.user == request.user:
-            owned_by_user = True
     
-    return render(request, 'transaction.html', {'add_transaction_form': form, 'message': message, 'filter': paginated_qs, 'filter_form': filter_form, 'owned_by_user': owned_by_user})
+    return render(request, 'transaction.html', {'add_transaction_form': form, 'message': message, 'filter': paginated_qs, 'filter_form': filter_form})
 
 
 def paginate(request, objects, url_param):
