@@ -57,7 +57,13 @@ def transaction(request):
     filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
     filter_form = filter.form
     paginated_qs = paginate(request, filter.qs, 'page')
-    return render(request, 'transaction.html', {'add_transaction_form': form, 'message': message, 'filter': paginated_qs, 'filter_form': filter_form})
+
+    owned_by_user = False
+    for transaction in filter.qs:
+        if transaction.from_accounts.first().user or transaction.to_account.user == request.user:
+            owned_by_user = True
+    
+    return render(request, 'transaction.html', {'add_transaction_form': form, 'message': message, 'filter': paginated_qs, 'filter_form': filter_form, 'owned_by_user': owned_by_user})
 
 
 def paginate(request, objects, url_param):

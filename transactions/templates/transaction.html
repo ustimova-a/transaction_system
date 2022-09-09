@@ -22,8 +22,8 @@
     <tbody>
         {% for x in filter %}
             <tr>
-                <td>{{ x.from_accounts.all|join:', ' }}</td>
-                <td>{{ x.to_account }}</td>
+                <td>{% if owned_by_user %} <a href="{% url 'account' x.from_accounts.first %}">{{ x.from_accounts.all|join:', ' }}</a> {% else %} {{ x.from_accounts.all|join:', ' }} {% endif %}</td>
+                <td>{% if owned_by_user %} <a href="{% url 'account' x.to_account %}">{{ x.to_account }}</a> {% else %} {{ x.to_account }} {% endif %}</td>
                 <td>{{ x.amount }}</td>
                 <td>{{ x.date_time }}</td>
                 <td><form action="{% url 'cancel_transaction' %}" method="POST">
