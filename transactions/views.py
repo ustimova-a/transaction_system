@@ -1,10 +1,8 @@
 from email import message
 from django.shortcuts import render
-from django.db.models import F, Sum, Count, Prefetch
+from django.db.models import F, Sum, Count, Prefetch, Q
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, EmptyPage
-from django.views.generic import ListView
-from django.forms.models import model_to_dict
 
 from .models import Account, Transaction
 from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, OutcomeForm
@@ -40,11 +38,29 @@ def transaction(request):
     else:
         form = TransactionForm(request.user)
         message = ''
-    filter = TransactionFilter(request.GET, queryset=Transaction.objects.all(), request=request)
+    filter = TransactionFilter\
+        (
+            request.GET, 
+            queryset=Transaction.objects
+                .filter\
+                    (
+                        Q(to_account__user=request.user)
+                        |
+                        Q(from_accounts__user=request.user)
+                    )
+                .order_by('-date_time'), 
+            request=request
+        )
     filter_form = filter.form
     paginated_qs = paginate(request, filter.qs, 'page')
     
-    return render(request, 'transaction.html', {'add_transaction_form': form, 'message': message, 'filter': paginated_qs, 'filter_form': filter_form})
+    return render(request, 'transaction.html', 
+        {
+            'add_transaction_form': form, 
+            'message': message, 
+            'filter': paginated_qs, 
+            'filter_form': filter_form
+        })
 
 
 def paginate(request, objects, url_param):
