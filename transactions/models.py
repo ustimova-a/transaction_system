@@ -56,6 +56,14 @@ class Transaction(models.Model):
         return transaction
 
 
+    def cancel(self):
+        self.to_account.balance -= self.amount
+        self.to_account.save()
+        self.from_accounts.update(balance=F('balance') - self.amount/self.from_accounts.count())
+        self.is_cancelled = True
+        self.save()
+
+
 
 
 

@@ -95,11 +95,7 @@ def cancel_transaction(request):
             message = 'Access denied.'
         else:
             if not transaction.is_cancelled:
-                transaction.to_account.balance -= transaction.amount
-                transaction.to_account.save()
-                transaction.from_accounts.update(balance=F('balance') - transaction.amount/transaction.from_accounts.count())
-                transaction.is_cancelled = True
-                transaction.save()
+                transaction.cancel()
                 message = f'Transaction No.{transaction.id} has been cancelled.'
             else:
                 message = 'Already cancelled.'
