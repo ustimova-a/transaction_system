@@ -88,21 +88,29 @@ class TransactionTestCase(TestCase):
         self.assertNotIn(transaction4, response.context['filter'])
 
 
-@pytest.fixture(autouse=True)
-def users_with_accounts(django_db_blocker):
+@pytest.fixture(scope='function')
+def users(django_db_blocker):
     with django_db_blocker.unblock(): 
         user1 = User.objects.create_user(username='user1', password='12345')
         user2 = User.objects.create_user(username='user2', password='12345')
         user3 = User.objects.create_user(username='user3', password='12345')
-        account1 = Account.objects.create(balance=1000, user=user1)
-        account2 = Account.objects.create(balance=1000, user=user2)
-        account3 = Account.objects.create(balance=1000, user=user2)
     return [user1, user2, user3]
 
+
 @pytest.fixture(autouse=True)
-def transactions(django_db_blocker, users_with_accounts):
-    user1 = users_with_accounts[0]
-    user2 = users_with_accounts[1]
+def accounts(django_db_blocker, users):
+    with django_db_blocker.unblock():
+        account1 = Account.objects.create(balance=1000, user=users[0])
+        account2 = Account.objects.create(balance=1000, user=users[1])
+        account3 = Account.objects.create(balance=1000, user=users[2])
+    return [account1, account2, account3]
+
+
+
+@pytest.fixture(autouse=True)
+def transactions(django_db_blocker, users):
+    user1 = users[0]
+    user2 = users[1]
     with django_db_blocker.unblock(): 
         transaction_list = []
         for account in user2.account_set.all():
@@ -122,6 +130,38 @@ def test_cancel(db, transactions):
         accounts = Account.objects.all()
         for account in accounts:
             assert account.balance == 1000
+
+
+def generate_data():
+    balances = [
+        [
+            1000, 200, 200
+        ]
+        , [
+            0, 0, 0
+        ]
+        , [
+            100, 1000, 1000
+        ]
+    ]
+    amounts = [500, 700, 101]
+    results = [pytest.raises(ValueError), pytest.raises(ValueError), None]
+    for i in range(len(balances)):
+        yield balances[i], amounts[i], results[i]
+
+# @pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize('balances, amount, expected_result', generate_data(), indirect=['balances', 'amount', 'expected_result'])
+def test_conditional_transactions(django_db_blocker, users, balances, amount, expected_result):
+    with django_db_blocker.unblock():
+        user1 = users[0]
+        user2 = users[1]
+        account1 = Account.objects.create(balance=balances[0], user=user1)
+        account2 = Account.objects.create(balance=balances[1], user=user1)
+        account3 = Account.objects.create(balance=balances[2], user=user2)
+        with expected_result:
+            Transaction.create_transaction(account3, [account1, account2], amount)
+
+
 
 
 
