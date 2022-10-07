@@ -3,10 +3,13 @@ from django.shortcuts import render
 from django.db.models import F, Sum, Count, Prefetch, Q
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, EmptyPage
+import logging
 
 from .models import Account, Transaction
 from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, OutcomeForm
 from .filters import TransactionFilter
+
+logger = logging.getLogger('src.transactions.views')
 
 
 def create_transaction(transaction_user, transaction_data):
@@ -20,10 +23,12 @@ def create_transaction(transaction_user, transaction_data):
     to_account = form.cleaned_data.get('to_account')
     amount = form.cleaned_data.get('amount')
     try:
-        Transaction.create_transaction(to_account, from_accounts, amount)
+        transaction = Transaction.create_transaction(to_account, from_accounts, amount)
         message = 'Successful transaction.'
+        logger.info(f'Created new transaction {transaction.id}: {to_account.id} -> {from_accounts} = {amount}')
     except ValueError as error:
         form.add_error('from_accounts', error)
+        logger.error(error)
         message = ''
         # for account in from_accounts:
         #     account.balance -= amount/accounts_count

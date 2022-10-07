@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-!&atl0fj$+vk32moysr_p@j40zmxqn0ukhi=niw$w*9eacr$g0
 # SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -54,11 +54,28 @@ MIDDLEWARE = [
 LOGGING = {
             'version': 1,
             'disable_existing_loggers': False,
+            'formatters': {
+                'simple': {
+                    'format': '{asctime} {module} {levelname}: {message}',
+                    'style': '{'
+                }
+            },
+            'filters': {
+                'debug_required': {
+                    '()': 'django.utils.log.RequireDebugTrue'
+                }
+            },
             'handlers': {
                 'db_file': {
                     'level': 'DEBUG',
                     'class': 'logging.FileHandler',
                     'filename': os.path.join(BASE_DIR, 'logs/db.log')
+                }, 
+                'info_file': {
+                    'level': 'INFO',
+                    'class': 'logging.FileHandler',
+                    'filename': os.path.join(BASE_DIR, 'logs/info.log'),
+                    'formatter': 'simple'
                 }
             },
             'loggers': {
@@ -66,6 +83,12 @@ LOGGING = {
                     'handlers': ['db_file'],
                     'level': 'DEBUG',
                     'propagate': True
+                },
+                'src.transactions.views': {
+                    'handlers': ['info_file'],
+                    'level': 'INFO',
+                    'propagate': True,
+                    'filters': ['debug_required']
                 }
             }
 }
@@ -142,3 +165,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = LOGIN_URL
