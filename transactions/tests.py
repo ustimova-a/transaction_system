@@ -5,11 +5,12 @@ from .models import Account, Transaction
 from django.contrib.auth.models import User
 import pytest
 from django.conf import settings
+from unittest.mock import patch
 
 class TransactionTestCase(TestCase):
     def setUp(self):
         self.c = Client()
-        self.user1 = User.objects.create_user(username='user1', password='12345')
+        self.user1 = User.objects.create_user(username='user1', password='12345', email='stalker-prog@mail.ru')
         self.user2 = User.objects.create_user(username='user2', password='12345')
         self.user3 = User.objects.create_user(username='user3', password='12345')
         self.account1 = Account.objects.create(balance=1000, user=self.user1)
@@ -18,6 +19,7 @@ class TransactionTestCase(TestCase):
         self.account4 = Account.objects.create(balance=1000, user=self.user3)
 
 
+    # @patch('transactions.views.send_mail', lambda:print('mail sent'))
     def test_correct_create_transaction(self):
         # user1 = User.objects.create_user(username='user1', password='12345')
         # user2 = User.objects.create_user(username='user2', password='12345')
@@ -160,6 +162,10 @@ def test_conditional_transactions(django_db_blocker, users, balances, amount, ex
         account3 = Account.objects.create(balance=balances[2], user=user2)
         with expected_result:
             Transaction.create_transaction(account3, [account1, account2], amount)
+
+
+# def test_create_transaction_with_mock():
+
 
 
 

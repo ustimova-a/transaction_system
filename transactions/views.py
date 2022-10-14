@@ -3,6 +3,9 @@ from django.shortcuts import render
 from django.db.models import F, Sum, Count, Prefetch, Q
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, EmptyPage
+from django.core.mail import send_mail
+import smtplib, ssl
+from django.conf import settings
 import logging
 
 from .models import Account, Transaction
@@ -25,6 +28,21 @@ def create_transaction(transaction_user, transaction_data):
     try:
         transaction = Transaction.create_transaction(to_account, from_accounts, amount)
         message = 'Successful transaction.'
+        send_mail('You received money', 
+                    f'Hello {to_account.user.username}! ${amount} have been transferred to your account #{to_account.id}',
+                    settings.DEFUALT_FROM_EMAIL, [to_account.user.email])
+        # email_message = f'''\
+        # Subject: You received money
+        # To: {to_account.user.email}
+        # From: {settings.DEFAULT_FROM_EMAIL}
+
+        # Hello {to_account.user.username}! ${amount} have been transferred to your account #{to_account.id}'''
+        # email_server = smtplib.SMTP('smtp.jino.ru', 587)
+        # # email_server.ehlo()
+        # # email_server.starttls(context=ssl.create_default_context())
+        # email_server.login('test@arpix.pro', 'b8de3256')
+        # email_server.sendmail(settings.DEFAULT_FROM_EMAIL, to_account.user.email, email_message)
+        # email_server.quit()
         logger.info(f'Created new transaction {transaction.id}: {to_account.id} -> {from_accounts} = {amount}')
     except ValueError as error:
         form.add_error('from_accounts', error)
@@ -95,7 +113,8 @@ def cancel_transaction(request):
     message = ''
     if request.method == 'POST':
         id = request.POST.get('id')
-        transaction = Transaction.objects.get(id=id)
+        # transaction = Transaction.objects.get(id=id)
+        transaction = Transaction.objects.get(amount=500)
         if transaction.from_accounts.first().user != request.user:
             message = 'Access denied.'
         else:

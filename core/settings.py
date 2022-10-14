@@ -25,9 +25,9 @@ SECRET_KEY = 'django-insecure-!&atl0fj$+vk32moysr_p@j40zmxqn0ukhi=niw$w*9eacr$g0
 # SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -58,6 +58,10 @@ LOGGING = {
                 'simple': {
                     'format': '{asctime} {module} {levelname}: {message}',
                     'style': '{'
+                },
+                'errors': {
+                    'format': '{asctime} {module} {levelname}: {message} {stack_info}',
+                    'style': '{'
                 }
             },
             'filters': {
@@ -75,7 +79,7 @@ LOGGING = {
                     'level': 'INFO',
                     'class': 'logging.FileHandler',
                     'filename': os.path.join(BASE_DIR, 'logs/info.log'),
-                    'formatter': 'simple'
+                    'formatter': 'errors'
                 }
             },
             'loggers': {
@@ -89,6 +93,11 @@ LOGGING = {
                     'level': 'INFO',
                     'propagate': True,
                     'filters': ['debug_required']
+                },
+                'django': {
+                    'handlers': ['info_file'],
+                    'level': 'ERROR',
+                    'propagate': True
                 }
             }
 }
@@ -169,3 +178,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = LOGIN_URL
+
+EMAIL_HOST = 'smtp.jino.ru'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'test@arpix.pro'
+EMAIL_HOST_PASSWORD = 'b8de3256'
+DEFUALT_FROM_EMAIL = 'test@arpix.pro'
