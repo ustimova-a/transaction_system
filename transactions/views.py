@@ -13,6 +13,8 @@ import logging
 from .models import Account, Transaction
 from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, OutcomeForm
 from .filters import TransactionFilter
+from rest_framework import generics
+from .serializers import ExtendedAccountSerializer
 
 logger = logging.getLogger('src.transactions.views')
 
@@ -218,3 +220,11 @@ def test(request):
     #                                         .prefetch_related(Prefetch('from_accounts', Account.objects.filter(balance__gte=1000)))\
     #                                         .all()
     return render(request, 'test.html', {'account_list': account_list})
+
+
+class AccountAPIView(generics.RetrieveAPIView):
+    queryset = Account.objects.all()
+    serializer_class = ExtendedAccountSerializer
+
+    # def get(self):
+    #     account = self.get_object()

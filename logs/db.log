@@ -14235,3 +14235,92 @@ CREATE INDEX "transactions_transaction_to_account_id_62a511c4" ON "transactions_
 (0.001) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
 (0.001) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
 (0.001) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.001) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.001) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.001) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.001) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.003) INSERT INTO "transactions_account" ("balance", "user_id", "created") VALUES (3522.0, 1, '2022-10-27 16:40:19.491043') RETURNING "transactions_account"."id"; args=(3522.0, 1, '2022-10-27 16:40:19.491043'); alias=default
+(0.001) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.003) UPDATE "transactions_account" SET "balance" = 4000.0, "user_id" = 1, "created" = '2022-08-17 12:30:58.871741' WHERE "transactions_account"."id" = 1; args=(4000.0, 1, '2022-08-17 12:30:58.871741', 1); alias=default
+(0.001) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.001) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) SELECT "transactions_transaction"."id", "transactions_transaction"."date_time", "transactions_transaction"."amount", "transactions_transaction"."to_account_id", "transactions_transaction"."is_cancelled" FROM "transactions_transaction" LIMIT 21; args=(); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT name, type FROM sqlite_master
+            WHERE type in ('table', 'view') AND NOT name='sqlite_sequence'
+            ORDER BY name; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.001) SELECT "transactions_account"."id", "transactions_account"."balance", "transactions_account"."user_id", "transactions_account"."created" FROM "transactions_account" WHERE "transactions_account"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) SELECT "auth_user"."id", "auth_user"."password", "auth_user"."last_login", "auth_user"."is_superuser", "auth_user"."username", "auth_user"."first_name", "auth_user"."last_name", "auth_user"."email", "auth_user"."is_staff", "auth_user"."is_active", "auth_user"."date_joined" FROM "auth_user" WHERE "auth_user"."id" = 1 LIMIT 21; args=(1,); alias=default
