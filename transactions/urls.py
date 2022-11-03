@@ -1,5 +1,9 @@
 from django.urls import path, include
 from . import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register('accounts', views.AccoutViewSet, basename='accounts')
 
 urlpatterns = [
     # path('', views.transaction, name='transaction'),
@@ -10,6 +14,8 @@ urlpatterns = [
     path('test/', views.test, name='test'),
     path('user_transactions/', views.TransactionListView.as_view()),
     path('api/', include([
+        path('', include('rest_framework.urls')),
+        path('', include(router.urls)),
         path('account/<int:pk>/', views.AccountAPIView.as_view(), name='account_detail')
     ])),
 ]

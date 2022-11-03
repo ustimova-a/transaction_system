@@ -7,7 +7,7 @@ from django.db.models import F
 
 class Account(models.Model):
     balance = models.FloatField(validators=[MinValueValidator(0)])
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     transactions = models.ManyToManyField('self', through='Transaction')
 

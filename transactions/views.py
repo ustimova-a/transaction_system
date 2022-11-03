@@ -13,8 +13,10 @@ import logging
 from .models import Account, Transaction
 from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, OutcomeForm
 from .filters import TransactionFilter
-from rest_framework import generics
-from .serializers import ExtendedAccountSerializer
+from rest_framework import generics, viewsets
+from rest_framework.response import Response
+from .serializers import ExtendedAccountSerializer, CreateAccountSerializaer
+from transactions import serializers
 
 logger = logging.getLogger('src.transactions.views')
 
@@ -228,3 +230,29 @@ class AccountAPIView(generics.RetrieveAPIView):
 
     # def get(self):
     #     account = self.get_object()
+
+
+class AccoutViewSet(viewsets.ModelViewSet):
+    queryset = Account.objects.all()
+    # serializer_class = ExtendedAccountSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            self.serializer_class = CreateAccountSerializaer
+            return CreateAccountSerializaer
+        return ExtendedAccountSerializer
+
+    # def create(self, request):
+    #     serializer = self.serializer_class(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save(user=request.user)
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors)
+
+    def create(self, request):
+        serializer_class = self.get_serializer_class()
+        serializer = serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
