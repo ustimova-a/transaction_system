@@ -54,3 +54,21 @@ class CreateAccountSerializaer(serializers.ModelSerializer):
         # return Account.objects.create(balance=validated_data['balance'], user=user)
         validated_data.update({'user': user})
         return super().create(validated_data)
+
+
+    def update(self, validated_data):
+        user_data = validated_data.pop('user')
+        user = User.objects.get(id=user_data['id'])
+        user.set_password(new_password=user_data['password'])
+        user.username = user_data['username']
+        user.first_name = user_data['first_name']
+        user.last_name = user_data['last_name']
+        user.email = user_data['email']
+        # user.save()
+        # account_data = validated_data.pop('account')
+        # account = Account.objects.get(id=account_data['id'])
+        # account.balance = account_data['balance']
+        # account.save()
+        # validated_data.update({'user': user, 'account': account})
+        validated_data.update({'user': user})
+        return super().create(validated_data)
