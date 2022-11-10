@@ -10,6 +10,7 @@ class Account(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     transactions = models.ManyToManyField('self', through='Transaction')
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.id)

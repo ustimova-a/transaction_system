@@ -13,10 +13,13 @@ import logging
 from .models import Account, Transaction
 from .forms import TransactionForm, TransactionFilterForm, AccountFilterForm, OutcomeForm
 from .filters import TransactionFilter
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, views
 from rest_framework.response import Response
-from .serializers import ExtendedAccountSerializer, CreateAccountSerializaer
+from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
+from .serializers import ExtendedAccountSerializer, CreateAccountSerializaer, CreateUserSerializer
 from transactions import serializers
+from django.contrib.auth import login, authenticate
 
 logger = logging.getLogger('src.transactions.views')
 
@@ -234,7 +237,7 @@ class AccountAPIView(generics.RetrieveAPIView):
 
 class AccoutViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
-    # serializer_class = ExtendedAccountSerializer
+    serializer_class = ExtendedAccountSerializer
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -256,3 +259,38 @@ class AccoutViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+
+
+    def update(self, request, pk):
+        serializer_class = self.get_serializer_class()
+        account = Account.objects.get(pk=pk)
+        serializer = serializer_class(account, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    @action(methods=['PATCH'], detail=True)
+    def deactivate(self, request, pk):
+        account = Account.objects.get(pk=pk)
+        account.is_active = False
+        account.save()
+        return Response(self.serializer_class(account).data)
+
+
+class ObtainToken(views.APIView):
+
+    def post(self, request):
+        # serializer = CreateUserSerializer(data=request.data)
+        # print(request.data)
+        # if serializer.is_valid():
+        username = request.data['username']
+        password = request.data['password']
+        user = authenticate(request, username=username, password=password)
+        # login(request, user)
+        if user:
+            token = Token.objects.create(user=user)
+            return Response({'token': token.key})
+        return Response({'error': 'Wrong login or password'})
+
+

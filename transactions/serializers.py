@@ -30,7 +30,7 @@ class ExtendedAccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ('balance', 'user', 'created', 'transactions')
+        fields = ('balance', 'user', 'created', 'transactions', 'is_active')
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -64,11 +64,6 @@ class CreateAccountSerializaer(serializers.ModelSerializer):
         user.first_name = user_data['first_name']
         user.last_name = user_data['last_name']
         user.email = user_data['email']
-        # user.save()
-        # account_data = validated_data.pop('account')
-        # account = Account.objects.get(id=account_data['id'])
-        # account.balance = account_data['balance']
-        # account.save()
-        # validated_data.update({'user': user, 'account': account})
+        user.save()
         validated_data.update({'user': user})
         return super().update(validated_data)

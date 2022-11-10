@@ -16,6 +16,7 @@ urlpatterns = [
     path('api/', include([
         path('', include('rest_framework.urls')),
         path('', include(router.urls)),
-        path('account/<int:pk>/', views.AccountAPIView.as_view(), name='account_detail')
+        path('account/<int:pk>/', views.AccountAPIView.as_view(), name='account_detail'),
+        path('get_token/', views.ObtainToken.as_view(), name='obtain_token')
     ])),
 ]
