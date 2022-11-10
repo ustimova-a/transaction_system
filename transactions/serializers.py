@@ -71,4 +71,4 @@ class CreateAccountSerializaer(serializers.ModelSerializer):
         # account.save()
         # validated_data.update({'user': user, 'account': account})
         validated_data.update({'user': user})
-        return super().create(validated_data)
+        return super().update(validated_data)
