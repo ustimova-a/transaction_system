@@ -59,7 +59,7 @@ class CreateAccountSerializaer(serializers.ModelSerializer):
     def update(self, validated_data):
         user_data = validated_data.pop('user')
         user = User.objects.get(id=user_data['id'])
-        user.set_password(new_password=user_data['password'])
+        user.set_password(password=user_data['password'])
         user.username = user_data['username']
         user.first_name = user_data['first_name']
         user.last_name = user_data['last_name']
